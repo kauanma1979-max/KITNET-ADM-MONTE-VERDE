@@ -3,14 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, Home, Users, Wallet, FileText, Plus, Edit, Trash2, 
   TrendingUp, TrendingDown, DollarSign, ExternalLink, Cloud, CloudOff, 
-  RefreshCw, User, Percent, Calendar, AlertCircle, Download, Upload,
-  Sparkles, ShieldAlert, CheckCircle2, Database, Info, ArrowUpRight, Search
+  User, Percent, Calendar, CheckCircle2, Database, Info, ArrowUpRight, Search, Download, Upload
 } from 'lucide-react';
-import { Unit, Tenant, FinancialRecord, TabType, AIAnalysis } from './types';
+import { Unit, Tenant, FinancialRecord, TabType } from './types';
 import { StorageService } from './services/storageService';
 import { isDbConfigured, supabase } from './services/supabaseClient';
 import { Modal } from './components/ActionButton';
-import { analyzeDataWithAI } from './services/geminiService';
 
 const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
@@ -26,8 +24,6 @@ const App: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const [dbStatus, setDbStatus] = useState<'OK' | 'ERROR' | 'CHECKING'>('CHECKING');
   const isCloudActive = isDbConfigured();
 
@@ -58,25 +54,9 @@ const App: React.FC = () => {
       setTenants(data.tenants);
       setRecords(data.records);
       setIsLoading(false);
-      
-      if (data.units.length > 0) {
-        handleAiAnalysis(data.units, data.tenants, data.records);
-      }
     };
     initData();
   }, []);
-
-  const handleAiAnalysis = async (u = units, t = tenants, r = records) => {
-    setIsAiLoading(true);
-    try {
-      const analysis = await analyzeDataWithAI(u, t, r);
-      setAiAnalysis(analysis);
-    } catch (err) {
-      console.error("Erro na análise:", err);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   const handleSaveUnits = async (newUnits: Unit[]) => {
     setUnits(newUnits);
@@ -210,9 +190,6 @@ const App: React.FC = () => {
               units={units} 
               records={records} 
               onUpdateRecord={updateRecord} 
-              aiAnalysis={aiAnalysis}
-              isAiLoading={isAiLoading}
-              onRefreshAi={() => handleAiAnalysis()}
             />
           )}
           {activeTab === 'units' && <UnitsTab units={units} onAdd={addUnit} onUpdate={updateUnit} onDelete={deleteUnit} />}
@@ -268,12 +245,9 @@ interface DashboardTabProps {
   units: Unit[];
   records: FinancialRecord[];
   onUpdateRecord: (record: FinancialRecord) => void;
-  aiAnalysis: AIAnalysis | null;
-  isAiLoading: boolean;
-  onRefreshAi: () => void;
 }
 
-const DashboardTab: React.FC<DashboardTabProps> = ({ units, records, onUpdateRecord, aiAnalysis, isAiLoading, onRefreshAi }) => {
+const DashboardTab: React.FC<DashboardTabProps> = ({ units, records, onUpdateRecord }) => {
   const paidRec = records.filter((r) => r.type === 'RECEIVABLE' && r.status === 'Pago');
   const paidPay = records.filter((r) => r.type === 'PAYABLE' && r.status === 'Pago');
   
@@ -296,8 +270,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ units, records, onUpdateRec
         <StatCard label="Ocupação" value={`${occupancyRate}%`} icon={<Percent size={20}/>} color="bg-slate-800" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden">
+      <div className="grid grid-cols-1 gap-8">
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h3 className="text-xl font-black flex items-center gap-3 text-slate-800 uppercase tracking-tight">
@@ -312,7 +286,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ units, records, onUpdateRec
           
           <div className="space-y-4">
             {records.filter((r) => r.status === 'Pendente' && r.type === 'RECEIVABLE').length > 0 ? (
-              records.filter((r) => r.status === 'Pendente' && r.type === 'RECEIVABLE').slice(0, 5).map((r) => (
+              records.filter((r) => r.status === 'Pendente' && r.type === 'RECEIVABLE').slice(0, 10).map((r) => (
                 <div key={r.id} className="p-5 border border-slate-100 rounded-2xl bg-slate-50/50 flex flex-wrap justify-between items-center hover:bg-white hover:shadow-lg hover:border-blue-100 transition-all group cursor-pointer">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-100 text-blue-600 shadow-sm transition-transform group-hover:scale-110">
@@ -343,69 +317,6 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ units, records, onUpdateRec
                   <CheckCircle2 size={32} className="text-slate-200" />
                 </div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tudo em dia! Nenhuma pendência encontrada.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-slate-900 rounded-[2rem] p-8 relative overflow-hidden shadow-2xl shadow-blue-900/10 border border-white/5">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-          
-          <div className="flex justify-between items-start mb-10 relative z-10">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="text-cyan-400" size={16} />
-                <h3 className="text-white font-black uppercase tracking-[0.2em] text-xs">Gemini AI Advisor</h3>
-              </div>
-              <p className="text-slate-500 text-[9px] font-bold uppercase">Análise Estratégica</p>
-            </div>
-            <button 
-              onClick={onRefreshAi} 
-              disabled={isAiLoading}
-              className={`p-2.5 rounded-xl bg-white/5 text-slate-400 hover:text-white transition-colors border border-white/5 ${isAiLoading ? 'animate-spin' : ''}`}
-            >
-              <RefreshCw size={18} />
-            </button>
-          </div>
-
-          <div className="relative z-10">
-            {isAiLoading ? (
-              <div className="space-y-6 py-4">
-                <div className="space-y-3">
-                  <div className="h-3 w-3/4 bg-white/5 rounded-full animate-pulse"></div>
-                  <div className="h-3 w-full bg-white/5 rounded-full animate-pulse"></div>
-                  <div className="h-3 w-1/2 bg-white/5 rounded-full animate-pulse"></div>
-                </div>
-                <div className="pt-8 space-y-4">
-                   {[1,2,3].map(i => <div key={i} className="h-10 w-full bg-white/5 rounded-2xl animate-pulse"></div>)}
-                </div>
-              </div>
-            ) : aiAnalysis ? (
-              <div className="space-y-8">
-                <div className="p-5 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                     <div className={`w-2 h-2 rounded-full ${aiAnalysis.riskLevel === 'Baixo' ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]' : 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.5)]'}`}></div>
-                     <span className={`text-[10px] font-black uppercase tracking-widest ${aiAnalysis.riskLevel === 'Baixo' ? 'text-emerald-400' : 'text-amber-400'}`}>Risco Financeiro: {aiAnalysis.riskLevel}</span>
-                  </div>
-                  <p className="text-slate-300 text-xs leading-relaxed font-medium">{aiAnalysis.summary}</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <p className="text-white text-[9px] font-black uppercase tracking-[0.3em] mb-4 opacity-50">Principais Recomendações</p>
-                  {aiAnalysis.suggestions.map((s, i) => (
-                    <div key={i} className="group flex gap-4 items-start p-3 rounded-2xl hover:bg-white/5 transition-all cursor-default border border-transparent hover:border-white/5">
-                      <div className="w-6 h-6 rounded-lg bg-blue-600/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-blue-600 transition-colors">
-                        <span className="text-[10px] font-black text-blue-400 group-hover:text-white">{i+1}</span>
-                      </div>
-                      <p className="text-slate-400 text-xs group-hover:text-slate-300 transition-colors">{s}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <Info size={40} className="text-slate-700 mx-auto mb-4 opacity-20" />
-                <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Clique em atualizar para processar os dados com IA.</p>
               </div>
             )}
           </div>
