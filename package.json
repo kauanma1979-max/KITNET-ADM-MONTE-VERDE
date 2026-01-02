@@ -1,0 +1,35 @@
+
+{
+  "name": "adm-kitnet-monte-verde",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "description": "Sistema Profissional de Gestão de Kitnets com IA e Sincronização em Nuvem",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kauanma1979-max/adm-kitnet-monte-verde.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kauanma1979-max/adm-kitnet-monte-verde/issues"
+  },
+  "homepage": "https://github.com/kauanma1979-max/adm-kitnet-monte-verde#readme",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@google/genai": "^1.34.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.6"
+  }
+}
