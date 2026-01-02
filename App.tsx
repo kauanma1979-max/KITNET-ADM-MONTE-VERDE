@@ -379,6 +379,8 @@ const UnitsTab: React.FC<UnitsTabProps> = ({ units, onAdd, onUpdate, onDelete })
               <th className="px-8 py-5">Nº Kitnet</th>
               <th className="px-8 py-5">Metragem</th>
               <th className="px-8 py-5">Locação Base</th>
+              <th className="px-8 py-5">Início Contrato</th>
+              <th className="px-8 py-5">Fim Contrato</th>
               <th className="px-8 py-5">Vencimento</th>
               <th className="px-8 py-5">Disponibilidade</th>
               <th className="px-8 py-5 text-right">Ações</th>
@@ -390,6 +392,8 @@ const UnitsTab: React.FC<UnitsTabProps> = ({ units, onAdd, onUpdate, onDelete })
                 <td className="px-8 py-6 font-black text-blue-900 text-2xl tracking-tighter">{u.number}</td>
                 <td className="px-8 py-6 text-slate-500 font-medium">{u.size || '--'} m²</td>
                 <td className="px-8 py-6 font-black text-slate-800">{formatCurrency(u.rent)}</td>
+                <td className="px-8 py-6 font-bold text-slate-600">{formatDate(u.contractStart)}</td>
+                <td className="px-8 py-6 font-bold text-slate-600">{formatDate(u.contractEnd)}</td>
                 <td className="px-8 py-6">
                   <div className="flex flex-col">
                     <span className="text-[10px] text-slate-400 uppercase font-black">Dia {u.paymentDay}</span>
@@ -414,7 +418,7 @@ const UnitsTab: React.FC<UnitsTabProps> = ({ units, onAdd, onUpdate, onDelete })
               </tr>
             )) : (
               <tr>
-                <td colSpan={6} className="py-24 text-center">
+                <td colSpan={8} className="py-24 text-center">
                   <Home size={48} className="text-slate-100 mx-auto mb-4" />
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nenhuma unidade cadastrada.</p>
                 </td>
@@ -681,7 +685,6 @@ const FinancesTab: React.FC<FinancesTabProps> = ({ records, tenants, onAdd, onUp
                 <th className="px-8 py-6">Valor Nominal</th>
                 <th className="px-8 py-6">Extras/Multa</th>
                 <th className="px-8 py-6">Vencimento</th>
-                <th className="px-8 py-6">Liquidação</th>
                 <th className="px-8 py-6 text-right">Ações</th>
               </tr>
             </thead>
@@ -704,14 +707,6 @@ const FinancesTab: React.FC<FinancesTabProps> = ({ records, tenants, onAdd, onUp
                       <span className="text-[8px] font-black uppercase text-slate-300 tracking-widest mt-0.5">{r.status}</span>
                     </div>
                   </td>
-                  <td className="px-8 py-6">
-                    {r.paymentDate ? (
-                      <div className="flex flex-col">
-                        <span className="text-slate-800 font-bold">{formatDate(r.paymentDate)}</span>
-                        <span className="text-[8px] font-black uppercase text-emerald-500 tracking-tighter">Confirmado</span>
-                      </div>
-                    ) : <span className="text-slate-200 text-[10px] font-black italic">--</span>}
-                  </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => { setEditing(r); setIsModalOpen(true); }} className="p-3 text-blue-600 hover:bg-blue-50 rounded-2xl transition-all"><Edit size={16}/></button>
@@ -721,7 +716,7 @@ const FinancesTab: React.FC<FinancesTabProps> = ({ records, tenants, onAdd, onUp
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={6} className="px-8 py-24 text-center">
+                  <td colSpan={5} className="px-8 py-24 text-center">
                     <Wallet size={48} className="text-slate-100 mx-auto mb-4" />
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sem lançamentos registrados.</p>
                   </td>
