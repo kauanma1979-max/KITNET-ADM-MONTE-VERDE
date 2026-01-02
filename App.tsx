@@ -856,13 +856,17 @@ const FinancesTab: React.FC<FinancesTabProps> = ({ records, tenants, onAdd, onUp
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{tab === 'RECEIVABLE' ? 'Inquilino Pagador' : 'Fornecedor / Favorecido'}</label>
             {tab === 'RECEIVABLE' ? (
-              <select name="entity" defaultValue={editing?.entity} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-100 transition-all cursor-pointer">
-                <option value="">Selecione o morador...</option>
-                {tenants.map((t) => <option key={t.id} value={t.name}>{t.name} (Unidade {t.kitnet})</option>)}
-              </select>
-            ) : <FormInput name="entity" defaultValue={editing?.entity} placeholder="Ex: CPFL Energia, Prestador..." required />}
+              <>
+                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Inquilino Pagador</label>
+                <select name="entity" defaultValue={editing?.entity} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-100 transition-all cursor-pointer">
+                  <option value="">Selecione o morador...</option>
+                  {tenants.map((t) => <option key={t.id} value={t.name}>{t.name} (Unidade {t.kitnet})</option>)}
+                </select>
+              </>
+            ) : (
+              <FormInput label="Fornecedor / Favorecido" name="entity" defaultValue={editing?.entity} placeholder="Ex: CPFL Energia, Prestador..." required />
+            )}
           </div>
           <FormInput label="Data da Liquidação Efetiva" name="paymentDate" type="date" defaultValue={editing?.paymentDate} />
           <button className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-900/20 hover:bg-blue-600 transition-all transform active:scale-95">
