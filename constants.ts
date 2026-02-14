@@ -28,20 +28,15 @@ export const INITIAL_TENANTS: Tenant[] = [
     kitnet: '02', 
     status: 'Ativo', 
     cpf: '099.892.399-08', 
-    observations: '12 meses de 25/08/2025 a 25/08/2026',
+    observations: '25/08/2025 a 25/08/2026',
     docsLink: '' 
   }
 ];
 
 export const INITIAL_RECORDS: FinancialRecord[] = [
-  // --- RECEITAS ÚNICAS ---
   { id: 'r1', description: 'ALUGUEL MÊS ATUAL', entity: 'Alexandro Donizeti Domingos', amount: 1250.00, fine: 0, dueDate: '2025-10-10', status: 'Pago', type: 'RECEIVABLE', paymentDate: '2025-10-10' },
-  { id: 'r2', description: 'ALUGUEL MÊS ATUAL', entity: 'Victor Figueiredo Marcondes de Almeida', amount: 1129.00, fine: 0, dueDate: '2025-10-25', status: 'Pago', type: 'RECEIVABLE', paymentDate: '2025-10-25' },
+  { id: 'r2', description: 'ALUGUEL MÊS ATUAL', entity: 'Victor Figueiredo Marcondes de Almeida', amount: 1129.53, fine: 0, dueDate: '2025-10-25', status: 'Pago', type: 'RECEIVABLE', paymentDate: '2025-10-25' },
   { id: 'r3', description: 'TAXA DE LAVANDERIA', entity: 'Alexandro Donizeti Domingos', amount: 45.00, fine: 0, dueDate: '2025-10-15', status: 'Pago', type: 'RECEIVABLE', paymentDate: '2025-10-15' },
-  { id: 'r4', description: 'ALUGUEL PRÓXIMO MÊS', entity: 'Alexandro Donizeti Domingos', amount: 1250.00, fine: 0, dueDate: '2025-11-10', status: 'Pendente', type: 'RECEIVABLE' },
-
-  // --- DESPESAS ÚNICAS ---
   { id: 'p1', description: 'CONTA DE ENERGIA - GERAL', entity: 'CPFL', amount: 130.00, dueDate: '2025-10-25', status: 'Pago', type: 'PAYABLE', paymentDate: '2025-10-25' },
-  { id: 'p2', description: 'SEGURO FIANÇA MENSAL', entity: 'PORTO SEGURO', amount: 117.02, dueDate: '2025-10-25', status: 'Pago', type: 'PAYABLE', paymentDate: '2025-10-25' },
-  { id: 'p3', description: 'MANUTENÇÃO PREVENTIVA', entity: 'PRESTADOR DE SERVIÇO', amount: 250.00, dueDate: '2025-11-05', status: 'Pendente', type: 'PAYABLE' }
+  { id: 'p2', description: 'SEGURO FIANÇA MENSAL', entity: 'PORTO SEGURO', amount: 117.02, dueDate: '2025-10-25', status: 'Pago', type: 'PAYABLE', paymentDate: '2025-10-25' }
 ];
